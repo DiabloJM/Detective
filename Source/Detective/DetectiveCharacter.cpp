@@ -85,7 +85,7 @@ void ADetectiveCharacter::Tick(float DeltaTime)
 	ForwardVector = FirstPersonCameraComponent->GetForwardVector(); // Get Camera Forward Vector
 	End = ((ForwardVector * 200.f) + Start); // Calculate End Location
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1); // Draw Debug Line
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1); // Draw Debug Line
 
 	if(!bHoldingItem) // If not holding an item
 	{
@@ -94,6 +94,7 @@ void ADetectiveCharacter::Tick(float DeltaTime)
 			if(Hit.GetActor()->GetClass()->IsChildOf(APickupAndRotateActor::StaticClass())) // If Hit Actor is a child of APickupAndRotateActor
 			{				
 				CurrentItem = Cast<APickupAndRotateActor>(Hit.GetActor()); // Set Current Item to the Hit Actor
+				//FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 20.f)); 
 			}
 		}
 		else
@@ -106,8 +107,8 @@ void ADetectiveCharacter::Tick(float DeltaTime)
 	{
 		if(bHoldingItem) // If Holding an Item
 		{
-			FirstPersonCameraComponent->SetFieldOfView(FMath::Lerp(FirstPersonCameraComponent->FieldOfView, 90.0f, 0.1f)); // Set Camera FOV to 90
-			HoldingComponent->SetRelativeLocation(FVector(0.0f, 50.0f, 50.0f)); // Set Holding Component Location
+			FirstPersonCameraComponent->SetFieldOfView(FMath::Lerp(FirstPersonCameraComponent->FieldOfView, 120.0f, 0.1f)); // Set Camera FOV to 90
+			HoldingComponent->SetRelativeLocation(FVector(120.0f, 0.0f, 50.0f)); // Set Holding Component Location
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->ViewPitchMax = 179.9000002f; // Set Camera Pitch Max
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->ViewPitchMin = -179.9000002f; // Set Camera Pitch Min
 			CurrentItem->RotateActor(); // Rotate Item
@@ -124,6 +125,7 @@ void ADetectiveCharacter::Tick(float DeltaTime)
 		if(bHoldingItem) 
 		{
 			HoldingComponent->SetRelativeLocation(FVector(50.0f, 0.0f, 0.f)); // Set Holding Component Location
+			//HoldingComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f)); // Set Holding Component Rotation
 		}
 	}
 }
