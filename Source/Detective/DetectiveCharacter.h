@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "PickupAndRotate.h"
 #include "DetectiveCharacter.generated.h"
 
 class UInputComponent;
@@ -13,6 +14,7 @@ class USceneComponent;
 class UCameraComponent;
 class UAnimMontage;
 class USoundBase;
+class APickupAndRotateActor; 
 
 UCLASS(config=Game)
 class ADetectiveCharacter : public ACharacter
@@ -38,6 +40,10 @@ class ADetectiveCharacter : public ACharacter
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
+	
+	/** Holding Component */
+	UPROPERTY(EditAnywhere)
+	class USceneComponent* HoldingComponent; // Holding component for the player
 
 	
 public:
@@ -45,7 +51,8 @@ public:
 
 protected:
 	virtual void BeginPlay();
-
+	
+	virtual void Tick(float DeltaSeconds) override; 
 public:
 		
 	/** Look Input Action */
@@ -64,12 +71,48 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
 
+	UPROPERTY(EditAnywhere) 
+	class APickupAndRotateActor* CurrentItem; // Current item the player is holding
+
+	bool bCanMove; // Can the player move?
+	bool bHoldingItem; // Is the player holding an item?
+	bool bInspecting; // Is the player inspecting an item?
+
+	float PitchMax; // Max pitch for the camera
+	float PitchMin; // Min pitch for the camera
+
+	FVector HoldingComp; // Holding component location
+	FRotator LastRotation; // Last rotation of the player
+
+	FVector Start; // Start of the line trace
+	FVector ForwardVector; // Forward vector of the player
+	FVector End; // End of the line trace
+
+	FHitResult Hit; // Hit result of the line trace
+
+	FComponentQueryParams DefaultComponentQueryParams; // Default component query params
+	FCollisionResponseParams DefaultResponseParams; // Default response params
+
 protected:
+
+	/** Action Function */
+	void OnAction(); // Action button pressed
+
+	/** Inspect Function */
+	void OnInspect(); // Inspect an item
+	void OnInspectReleased(); // Stop inspecting an item
+	
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	// toggle player movement
+	void ToggleMovement(); // Toggle player movement
+
+	// toggle holding item pickup
+	void ToggleItemPickup(); // Toggle item pickup
 
 protected:
 	// APawn interface
@@ -81,6 +124,9 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+private:
+	ADetectiveCharacter* PlayerCharacter; // Player character
 
 
 };
